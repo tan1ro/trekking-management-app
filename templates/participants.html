@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Participants</title>
+</head>
+<body>
+  <h1>Participants — {{ trek.name }}</h1>
+
+  <table border="1" cellpadding="6">
+    <tr><th>User ID</th><th>Name</th><th>Email</th><th>Status</th></tr>
+    {% for booking in bookings %}
+    <tr>
+      <td>{{ booking.user.id }}</td>
+      <td>{{ booking.user.name }}</td>
+      <td>{{ booking.user.email }}</td>
+      <td>{{ booking.status|capitalize }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <p><a href="/staff/dashboard">Back</a></p>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Admin Dashboard</title>
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+
+  <form method="GET" action="/admin/dashboard">
+    <input type="text" name="search" placeholder="Search by name">
+    <button type="submit">Search</button>
+  </form>
+
+  {% if search %}
+  <h3>Matching Users</h3>
+  <table border="1" cellpadding="6">
+    <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th></tr>
+    {% for user in user_results %}
+    <tr>
+      <td>{{ user.id }}</td>
+      <td>{{ user.name|capitalize }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.role|capitalize }}</td>
+      <td>{{ user.status|capitalize }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h3>Matching Treks</h3>
+  <table border="1" cellpadding="6">
+    <tr><th>ID</th><th>Name</th><th>Location</th><th>Difficulty</th><th>Status</th></tr>
+    {% for trek in trek_results %}
+    <tr>
+      <td>{{ trek.id }}</td>
+      <td>{{ trek.name }}</td>
+      <td>{{ trek.location }}</td>
+      <td>{{ trek.difficulty }}</td>
+      <td>{{ trek.status|capitalize }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <hr>
+  {% endif %}
+
+  <p>Trekkers: {{ total_users }}</p>
+  <p>Staff: {{ total_staff }}</p>
+  <p>Pending staff: {{ pending_staff }}</p>
+  <p>Treks: {{ total_treks }}</p>
+  <p>Bookings: {{ total_bookings }}</p>
+  <form action="/admin/bookings" method="GET">
+    <button type="submit">Open bookings list</button>
+  </form>
+  <hr>
+
+  <h2>Staff Approvals</h2>
+  <table border="1" cellpadding="6">
+    <tr><th>Name</th><th>Email</th><th>Status</th></tr>
+    {% for staff in staff_members %}
+    <tr>
+      <td>{{ staff.name|capitalize }}</td>
+      <td>{{ staff.email }}</td>
+      <td>
+        {% if staff.status == "pending" %}
+          Pending — <a href="/approve_staff/{{ staff.id }}">Approve</a>
+        {% else %}
+          {{ staff.status|capitalize }}
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  <hr>
+
+  <h2>Accounts</h2>
+  <table border="1" cellpadding="6">
+    <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr>
+    {% for user in all_users %}
+    <tr>
+      <td>{{ user.id }}</td>
+      <td>{{ user.name|capitalize }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.role|capitalize }}</td>
+      <td>{{ user.status|capitalize }}</td>
+      <td>
+        {% if user.role != "admin" %}
+          {% if user.status == "inactive" %}
+            <a href="/toggle_user/{{ user.id }}">Activate</a>
+          {% else %}
+            <a href="/toggle_user/{{ user.id }}">Deactivate</a>
+          {% endif %}
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  <hr>
+
+  <form action="/admin/add_trek" method="GET">
+    <button type="submit">Create trek</button>
+  </form>
+
+  <h2>Trek List</h2>
+  <table border="1" cellpadding="6">
+    <tr>
+      <th>Name</th><th>Location</th><th>Difficulty</th><th>Days</th>
+      <th>Slots</th><th>Status</th><th>Staff</th><th></th>
+    </tr>
+    {% for trek in treks %}
+    <tr>
+      <td>{{ trek.name }}</td>
+      <td>{{ trek.location }}</td>
+      <td>{{ trek.difficulty }}</td>
+      <td>{{ trek.duration }}</td>
+      <td>{{ trek.available_slots }}</td>
+      <td>{{ trek.status|capitalize }}</td>
+      <td>
+        {% if trek.assigned_staff %}
+          {{ trek.assigned_staff.name }}
+        {% else %}
+          Unassigned
+        {% endif %}
+      </td>
+      <td>
+        <a href="/edit_trek/{{ trek.id }}">Edit</a> |
+        <a href="/delete_trek/{{ trek.id }}">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <form action="/logout" method="GET">
+    <button type="submit">Logout</button>
+  </form>
+</body>
+</html>

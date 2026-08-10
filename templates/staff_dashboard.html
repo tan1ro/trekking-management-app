@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Staff Dashboard</title>
+</head>
+<body>
+  <h1>Assigned Treks</h1>
+
+  <table border="1" cellpadding="6">
+    <tr>
+      <th>ID</th><th>Name</th><th>Location</th><th>Difficulty</th>
+      <th>Status</th><th>Participants</th><th>Slots</th><th>Update</th><th></th>
+    </tr>
+    {% for trek in assigned_treks %}
+    <tr>
+      <form method="POST" action="/staff/update_trek/{{ trek.id }}">
+        <td>{{ trek.id }}</td>
+        <td>{{ trek.name }}</td>
+        <td>{{ trek.location }}</td>
+        <td>{{ trek.difficulty }}</td>
+        <td>
+          <select name="status">
+            {% for option in ["Pending", "Open", "Closed", "Completed"] %}
+            <option value="{{ option }}" {% if trek.status == option %}selected{% endif %}>
+              {{ option }}
+            </option>
+            {% endfor %}
+          </select>
+        </td>
+        <td>{{ participant_counts[trek.id] }}</td>
+        <td>
+          <input type="number" name="available_slots" value="{{ trek.available_slots }}" min="0">
+        </td>
+        <td><button type="submit">Save</button></td>
+        <td><a href="/staff/participants/{{ trek.id }}">Participants</a></td>
+      </form>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <p>
+    <a href="/staff/profile">Profile</a> |
+    <a href="/logout">Logout</a>
+  </p>
+</body>
+</html>

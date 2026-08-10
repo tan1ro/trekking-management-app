@@ -1,0 +1,19 @@
+# Trekking Management Application — Route Map
+
+| Endpoint                       | Method     | Purpose                  |
+| ------------------------------ | ---------- | ------------------------ |
+| /register                      | GET, POST  | User registration        |
+| /login                         | GET, POST  | User authentication      |
+| /logout                        | GET        | User logout              |
+| /admin/dashboard               | GET        | Admin dashboard          |
+| /admin/add_trek                | GET, POST  | Add new trek             |
+| /edit_trek/<trek_id>           | GET, POST  | Edit trek                |
+| /delete_trek/<trek_id>         | GET        | Delete trek              |
+| /book_trek/<trek_id>           | GET        | Book a trek              |
+| /my_bookings                   | GET        | View user bookings       |
+| /cancel_booking/<booking_id>   | GET        | Cancel booking           |
+| /staff/dashboard               | GET        | Staff dashboard          |
+| /staff/update_trek/<trek_id>   | POST       | Update trek status       |
+| /staff/participants/<trek_id>  | GET        | View participants        |
+| /profile                       | GET, POST  | Update user profile      |
+| /staff/profile                 | GET, POST  | Update staff profile     |
