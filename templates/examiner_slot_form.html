@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit Examination Slot' if slot else 'Create Examination Slot' }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-3">
+    <div class="col-md-7 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-calendar-plus me-2"></i>{{ 'Edit Examination Slot' if slot else 'Schedule New Examination Slot' }}</h5>
+            </div>
+            <div class="card-body p-4">
+                {% if not exams and not slot %}
+                    <div class="alert alert-warning mb-0">
+                        <i class="bi bi-exclamation-circle-fill me-1"></i> There are currently no examinations open for slot creation. Please check back when an administrator opens the slot creation window.
+                    </div>
+                    <div class="mt-3 text-center">
+                        <a href="{{ url_for('examiner_dashboard') }}" class="btn btn-outline-secondary">Return to Dashboard</a>
+                    </div>
+                {% else %}
+                    <form method="POST" action="{{ url_for('examiner_edit_slot', slot_id=slot.id) if slot else url_for('examiner_create_slot') }}">
+                        <div class="mb-3">
+                            <label for="exam_id" class="form-label fw-semibold">Target Examination</label>
+                            {% if slot %}
+                                <input type="text" class="form-control" value="{{ slot.examination.name }} ({{ slot.examination.course.code }})" readonly disabled>
+                            {% else %}
+                                <select class="form-select" id="exam_id" name="exam_id" required>
+                                    <option value="" disabled selected>-- Select an open examination --</option>
+                                    {% for e in exams %}
+                                    <option value="{{ e.id }}">
+                                        {{ e.name }} ({{ e.course.code }}) &bull; Duration: {{ e.duration }} mins
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="date" class="form-label fw-semibold">Slot Date</label>
+                            <input type="date" class="form-control" id="date" name="date" value="{{ slot.date.strftime('%Y-%m-%d') if slot else '' }}" required>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="start_time" class="form-label fw-semibold">Start Time (HH:MM)</label>
+                                <input type="time" class="form-control" id="start_time" name="start_time" value="{{ slot.start_time if slot else '10:00' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="end_time" class="form-label fw-semibold">End Time (HH:MM)</label>
+                                <input type="time" class="form-control" id="end_time" name="end_time" value="{{ slot.end_time if slot else '10:30' }}" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="capacity" class="form-label fw-semibold">Student Capacity (Seats)</label>
+                            <input type="number" class="form-control" id="capacity" name="capacity" value="{{ slot.capacity if slot else 1 }}" min="1" max="50" required>
+                            <div class="form-text text-muted">For 1-on-1 vivas, keep capacity at 1. For group assessments, adjust accordingly.</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('examiner_dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary fw-bold">{{ 'Save Slot Changes' if slot else 'Publish Examination Slot' }}</button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
