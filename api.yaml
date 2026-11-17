@@ -1,19 +1,146 @@
-# Trekking Management Application — Route Map
+# Examination Management Portal (EMP) — API & Route Specifications
+# Built for IIT Madras Modern Application Development 1 (MAD-1)
 
-| Endpoint                       | Method     | Purpose                  |
-| ------------------------------ | ---------- | ------------------------ |
-| /register                      | GET, POST  | User registration        |
-| /login                         | GET, POST  | User authentication      |
-| /logout                        | GET        | User logout              |
-| /admin/dashboard               | GET        | Admin dashboard          |
-| /admin/add_trek                | GET, POST  | Add new trek             |
-| /edit_trek/<trek_id>           | GET, POST  | Edit trek                |
-| /delete_trek/<trek_id>         | GET        | Delete trek              |
-| /book_trek/<trek_id>           | GET        | Book a trek              |
-| /my_bookings                   | GET        | View user bookings       |
-| /cancel_booking/<booking_id>   | GET        | Cancel booking           |
-| /staff/dashboard               | GET        | Staff dashboard          |
-| /staff/update_trek/<trek_id>   | POST       | Update trek status       |
-| /staff/participants/<trek_id>  | GET        | View participants        |
-| /profile                       | GET, POST  | Update user profile      |
-| /staff/profile                 | GET, POST  | Update staff profile     |
+openapi: 3.0.0
+info:
+  title: Examination Management Portal (EMP)
+  version: 1.0.0
+  description: Official route and endpoint specifications for the IITM MAD-1 Examination Management Portal.
+
+paths:
+  # Authentication & Profile
+  /login:
+    get:
+      summary: Render login page
+    post:
+      summary: Authenticate user (Admin, Examiner, Student)
+  /register:
+    get:
+      summary: Render registration form for Examiner and Student
+    post:
+      summary: Register account (Examiners are set to 'pending'; Students are 'approved')
+  /logout:
+    get:
+      summary: Clear user session and redirect to login
+  /profile:
+    get:
+      summary: View user profile
+    post:
+      summary: Update profile details or change password
+
+  # Admin Endpoints
+  /admin/dashboard:
+    get:
+      summary: Admin dashboard displaying core metrics and search
+  /admin/courses:
+    get:
+      summary: List all academic courses
+    post:
+      summary: Create a new academic course
+  /admin/courses/{course_id}/edit:
+    get:
+      summary: Render course edit form
+    post:
+      summary: Update course code, title, and description
+  /admin/courses/{course_id}/delete:
+    post:
+      summary: Delete course and cascade examinations
+  /admin/exams:
+    get:
+      summary: View all scheduled examinations
+  /admin/exams/create:
+    get:
+      summary: Render examination creation form
+    post:
+      summary: Create new examination with timeline windows
+  /admin/exams/{exam_id}/edit:
+    get:
+      summary: Render exam edit form
+    post:
+      summary: Update examination parameters and timelines
+  /admin/exams/{exam_id}/status:
+    post:
+      summary: Transition examination status (Draft, Slot Creation, Booking Open, Closed, Completed)
+  /admin/exams/{exam_id}/delete:
+    post:
+      summary: Remove examination and associated slots
+  /admin/exams/{exam_id}/rubrics:
+    get:
+      summary: View examination evaluation rubrics
+    post:
+      summary: Add new rubric criterion (criterion_name, max_marks, weightage, description)
+  /admin/rubrics/{rubric_id}/delete:
+    post:
+      summary: Delete rubric criterion
+  /admin/examiners:
+    get:
+      summary: View all registered examiners and their approval status
+  /admin/examiners/{user_id}/approve:
+    post:
+      summary: Approve pending examiner account
+  /admin/examiners/{user_id}/toggle:
+    post:
+      summary: Deactivate or reactivate examiner account
+  /admin/slots:
+    get:
+      summary: Oversight of all examination slots across all examiners
+  /admin/slots/{slot_id}/change_examiner:
+    post:
+      summary: Reassign examination slot to a different examiner
+  /admin/bookings:
+    get:
+      summary: View all candidate examination bookings
+  /admin/bookings/{booking_id}/reschedule:
+    get:
+      summary: Render booking reschedule form
+    post:
+      summary: Reschedule candidate booking to another available slot
+
+  # Examiner Endpoints
+  /examiner/dashboard:
+    get:
+      summary: Examiner dashboard with assigned slots, candidate counts, and pending evaluations
+  /examiner/slots/create:
+    get:
+      summary: Render slot creation form (enforces active slot creation period)
+    post:
+      summary: Schedule a new examination time slot
+  /examiner/slots/{slot_id}/edit:
+    get:
+      summary: Edit slot parameters before bookings exist
+    post:
+      summary: Update slot timing and capacity
+  /examiner/slots/{slot_id}/delete:
+    post:
+      summary: Delete slot (allowed only when no active bookings exist)
+  /examiner/slots/{slot_id}/students:
+    get:
+      summary: View candidate roster booked for this slot
+  /examiner/bookings/{booking_id}/evaluate:
+    get:
+      summary: Render rubric scoring sheet for candidate
+    post:
+      summary: Submit rubric-wise marks and evaluation remarks
+
+  # Student Endpoints
+  /student/dashboard:
+    get:
+      summary: Student dashboard with upcoming appointments, open exams, and scorecards
+  /student/exams:
+    get:
+      summary: Browse, search, and filter examinations by name, course, and type
+  /student/exams/{exam_id}/slots:
+    get:
+      summary: View available examination slots for an exam
+  /student/slots/{slot_id}/book:
+    post:
+      summary: Book examination slot (enforces open booking window, capacity, duplicate check)
+  /student/bookings/{booking_id}/cancel:
+    post:
+      summary: Cancel booking before deadline and restore slot seat
+  /student/history:
+    get:
+      summary: View complete history of all examination bookings
+  /student/scorecard/{booking_id}:
+    get:
+      summary: View rubric breakdown, marks, remarks, and official scorecard
