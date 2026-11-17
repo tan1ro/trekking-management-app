@@ -1,122 +1,94 @@
-# Trekking Management Application
+# Examination Management Portal (EMP)
 
-## Project Overview
+A lightweight web application built for educational institutions to manage examination schedules, student slot booking, and rubric-based evaluations.
 
-The Trekking Management Application is a Flask-based web application that helps manage trekking activities. The system supports three types of users:
+Developed for **IIT Madras Diploma in Programming & Data Science — Modern Application Development 1 (MAD-1)**.
 
-* **Admin**
-* **Staff**
-* **Trekker (User)**
+---
 
-The application allows trek creation and management, trek booking, participant tracking, and trekking history management.
+## 🌟 Tech Stack
 
+* **Backend:** Python + **Flask**
+* **Database:** **SQLite** with **Flask-SQLAlchemy** (Created programmatically)
+* **Frontend:** **Jinja2** HTML templates + **Bootstrap 5** (No client-side JS used for core requirements)
+* **Security:** Role-based access control (Admin, Examiner, Student), hashed passwords with `werkzeug.security`
 
-## Installation and Setup
+---
 
-### Step 1: Clone the Repository
+## 🚀 Quick Run (Under 1 Minute)
 
+### 1. Initialize the Database
 ```bash
-git clone <repository-url>
-cd trekking_management_app
+python3 create_db.py
+```
+
+### 2. Start the Server
+```bash
+python3 app.py
+```
+Open **[http://127.0.0.1:5001](http://127.0.0.1:5001)** in your browser.
+
+---
+
+## 🔑 Demo Login Accounts
+
+| Role | Name | Email | Password | Viva Demo Scenario |
+| :--- | :--- | :--- | :--- | :--- |
+| **Admin** | System Admin | `admin@emp.iitm.ac.in` | `Admin@123` | Pre-existing superuser |
+| **Examiner** | Dr. Ramesh Sharma | `dr.sharma@emp.iitm.ac.in` | `Examiner@123` | **Approved** &bull; Can create slots & evaluate students |
+| **Examiner** | Prof. Ankit Verma | `prof.verma@emp.iitm.ac.in` | `Examiner@123` | **Pending** &bull; Tests Admin approval flow |
+| **Student** | Nandeesh Kantli | `nandeesh@emp.iitm.ac.in` | `Student@123` | **Candidate** &bull; Ready to book open exam slots live |
+| **Student** | Aarav Patel | `aarav.patel@emp.iitm.ac.in` | `Student@123` | **Evaluated** &bull; Has published scorecard (38/40 pts) |
+
+*Full documentation of users and test scenarios is available in [USERS.md](USERS.md).*
+*Official project report and ER diagram are available in [PROJECT_REPORT.md](PROJECT_REPORT.md).*
+
+---
+
+## 👥 Core Features by Role
+
+### 1. Admin
+* Dashboard with total counts for Courses, Exams, Examiners, Students, Slots, and Bookings.
+* Manage courses (create, edit, delete).
+* Manage examinations (create, edit, delete, status transitions).
+* Define examination rubrics (criteria, max marks, weightage, description).
+* Approve or deactivate examiners.
+* Oversight of all slots and bookings (reschedule student bookings, reassign examiners).
+* Search bar across students, examiners, examinations, and bookings.
+
+### 2. Examiner
+* Self-register (requires Admin approval to access dashboard).
+* Create slots during open slot creation window.
+* Edit/delete slots before any bookings occur.
+* View candidate roster booked for each slot.
+* Evaluate candidates using official examination rubrics (marks + remarks).
+
+### 3. Student
+* Self-register and log in directly.
+* Search and filter examinations.
+* Book available examination slots (enforces open booking window, capacity, 1 booking per exam).
+* Cancel booking before deadline (restores slot seat).
+* View complete history and detailed scorecards.
+
+---
+
+## 📊 Database Schema (7 Entities)
+
+```mermaid
+erDiagram
+    Course ||--o{ Examination : "contains"
+    Examination ||--o{ Rubric : "evaluated with"
+    Examination ||--o{ ExamSlot : "scheduled as"
+    User ||--o{ ExamSlot : "conducts (Examiner)"
+    User ||--o{ Booking : "reserves (Student)"
+    ExamSlot ||--o{ Booking : "contains"
+    Booking ||--o{ Evaluation : "assessed with"
+    Rubric ||--o{ Evaluation : "scored against"
 ```
 
 ---
 
-### Step 2: Create a Virtual Environment
-
-Windows:
-
-```bash
-python -m venv venv
-venv\Scripts\activate
-```
-
-Mac/Linux:
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
----
-
-### Step 3: Install Dependencies
-
-```bash
-pip install flask
-pip install flask-sqlalchemy
-```
-
-Or install all dependencies together:
-
-```bash
-pip install flask flask-sqlalchemy
-```
-
----
-
-### Step 4: Initialize the Database
-
-```bash
-python create_db.py
-```
-
----
-
-### Step 5: Verify Database Configuration
-
-In `app.py`:
-
-```python
-app.config["SECRET_KEY"] = "supersecretkey"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///trekking.db"
-```
-
-The application uses SQLite and stores data in `trekking.db`.
-
----
-
-## Running the Application
-
-Start the Flask server:
-
-```bash
-python app.py
-```
-
-You should see:
-
-```text
-* Running on http://127.0.0.1:5000
-```
-
-Open your browser and visit:
-
-```text
-http://127.0.0.1:5000/register
-```
-
-## Default Admin Credentials
-
-```text
-Email: admin@trekking.com
-Password: Admin@123
-```
-
-Staff Login:
-Email: staff@trekking.com
-Password: staff@123
-
-Trekker Logins:
-
-Email: trekker1@trekking.com
-Password: trekker1@123
-
-Email: trekker2@trekking.com
-Password: trekker2@123
----
-
-## Author
-
-Nandeesh Kantli
-24F1002499
+## 👤 Author
+* **Name:** Nandeesh Kantli
+* **Roll No:** 24F1002499
+* **Course:** Modern Application Development 1 (MAD-1), IIT Madras
