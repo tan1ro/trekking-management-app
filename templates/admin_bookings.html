@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Manage Bookings{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-journal-check text-dark me-2"></i>Bookings Directory</h2>
+        <p class="text-muted mb-0">Complete roster of student examination reservations with rescheduling capability.</p>
+    </div>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold">All Student Bookings ({{ bookings|length }})</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Student Name</th>
+                    <th>Examination</th>
+                    <th>Date & Time</th>
+                    <th>Examiner</th>
+                    <th>Status</th>
+                    <th>Score / Result</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in bookings %}
+                <tr>
+                    <td><span class="badge bg-secondary">#{{ b.id }}</span></td>
+                    <td>
+                        <div class="fw-bold text-dark">{{ b.student.name }}</div>
+                        <small class="text-muted">{{ b.student.email }}</small>
+                    </td>
+                    <td>
+                        <div class="fw-semibold">{{ b.slot.examination.name }}</div>
+                        <span class="badge bg-light text-dark border">{{ b.slot.examination.course.code }}</span>
+                    </td>
+                    <td>
+                        <div class="fw-semibold">{{ b.slot.date }}</div>
+                        <small class="text-muted">{{ b.slot.start_time }} - {{ b.slot.end_time }}</small>
+                    </td>
+                    <td>
+                        <div class="fw-semibold">{{ b.slot.examiner.name }}</div>
+                        <small class="text-muted">{{ b.slot.examiner.department }}</small>
+                    </td>
+                    <td>
+                        {% if b.status == 'Booked' %}
+                            <span class="badge bg-primary fs-6">Booked</span>
+                        {% elif b.status == 'Completed' %}
+                            <span class="badge bg-success fs-6">Completed</span>
+                        {% else %}
+                            <span class="badge bg-danger fs-6">Cancelled</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if b.status == 'Completed' and b.total_score is not none %}
+                            <span class="badge bg-success fs-6">{{ b.total_score }} / {{ b.slot.examination.max_marks }} pts</span>
+                        {% elif b.status == 'Booked' %}
+                            <span class="text-muted small">Pending Viva</span>
+                        {% else %}
+                            <span class="text-muted small">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            {% if b.status == 'Booked' %}
+                                <a href="{{ url_for('admin_reschedule_booking', booking_id=b.id) }}" class="btn btn-outline-warning btn-sm fw-semibold">
+                                    <i class="bi bi-clock-history me-1"></i> Reschedule
+                                </a>
+                            {% elif b.status == 'Completed' %}
+                                <a href="{{ url_for('student_scorecard', booking_id=b.id) }}" class="btn btn-outline-info btn-sm">
+                                    <i class="bi bi-card-checklist me-1"></i> Scorecard
+                                </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="8" class="text-center text-muted py-4">No student bookings found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

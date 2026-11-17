@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Manage Examiners{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-person-check text-warning me-2"></i>Examiners Directory</h2>
+        <p class="text-muted mb-0">Review examiner registrations, grant dashboard access permissions, or toggle account status.</p>
+    </div>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold">Registered Examiners ({{ examiners|length }})</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Examiner Name</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Contact</th>
+                    <th>Slots Created</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ex in examiners %}
+                <tr>
+                    <td>
+                        <div class="fw-bold text-dark">{{ ex.name }}</div>
+                        <small class="text-muted">ID: #{{ ex.id }}</small>
+                    </td>
+                    <td><code>{{ ex.email }}</code></td>
+                    <td>{{ ex.department or 'N/A' }}</td>
+                    <td>{{ ex.contact or 'N/A' }}</td>
+                    <td>
+                        <span class="badge bg-secondary">{{ ex.slots|length }} slot(s)</span>
+                    </td>
+                    <td>
+                        {% if ex.status == 'approved' %}
+                            <span class="badge bg-success fs-6"><i class="bi bi-check-circle me-1"></i> Approved</span>
+                        {% elif ex.status == 'pending' %}
+                            <span class="badge bg-warning text-dark fs-6"><i class="bi bi-clock-history me-1"></i> Pending Approval</span>
+                        {% else %}
+                            <span class="badge bg-danger fs-6"><i class="bi bi-slash-circle me-1"></i> Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            {% if ex.status == 'pending' %}
+                                <form method="POST" action="{{ url_for('admin_approve_examiner', user_id=ex.id) }}">
+                                    <button type="submit" class="btn btn-success btn-sm fw-bold">
+                                        <i class="bi bi-check2"></i> Approve Access
+                                    </button>
+                                </form>
+                            {% endif %}
+
+                            <form method="POST" action="{{ url_for('admin_toggle_examiner', user_id=ex.id) }}">
+                                {% if ex.status == 'approved' %}
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Deactivate Account">
+                                        <i class="bi bi-person-x"></i> Deactivate
+                                    </button>
+                                {% elif ex.status == 'inactive' %}
+                                    <button type="submit" class="btn btn-outline-success btn-sm" title="Reactivate Account">
+                                        <i class="bi bi-person-check"></i> Activate
+                                    </button>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center text-muted py-4">No examiners registered yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

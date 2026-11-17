@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Manage Courses{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-book text-primary me-2"></i>Course Management</h2>
+        <p class="text-muted mb-0">Create, edit, or archive academic courses offering examinations.</p>
+    </div>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Back to Dashboard</a>
+</div>
+
+<div class="row g-4">
+    <!-- Add New Course Form -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-1"></i> Add New Course</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('admin_courses') }}">
+                    <div class="mb-3">
+                        <label for="code" class="form-label fw-semibold">Course Code</label>
+                        <input type="text" class="form-control text-uppercase" id="code" name="code" placeholder="e.g. CS2001" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-semibold">Course Name</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="e.g. Modern Application Development I" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-semibold">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Brief course syllabus & objective..."></textarea>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary fw-bold">Create Course</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses List -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold">Registered Courses ({{ courses|length }})</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Name & Description</th>
+                            <th>Status</th>
+                            <th>Examinations</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in courses %}
+                        <tr>
+                            <td><span class="badge bg-dark fs-6">{{ c.code }}</span></td>
+                            <td>
+                                <div class="fw-bold">{{ c.name }}</div>
+                                <small class="text-muted">{{ c.description }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if c.status == 'active' else 'secondary' }}">{{ c.status }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-info text-dark">{{ c.examinations|length }} exam(s)</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a href="{{ url_for('admin_edit_course', course_id=c.id) }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-pencil"></i></a>
+                                    <form method="POST" action="{{ url_for('admin_delete_course', course_id=c.id) }}" onsubmit="return confirm('Are you sure you want to delete this course and all its examinations?');">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="5" class="text-center text-muted py-4">No courses registered yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

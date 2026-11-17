@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Rubrics: {{ exam.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-ui-checks text-info me-2"></i>Evaluation Rubrics</h2>
+        <p class="text-muted mb-0">Examination: <strong>{{ exam.name }}</strong> ({{ exam.course.code }}) &bull; Maximum Total Marks: <strong>{{ exam.max_marks }} pts</strong></p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('admin_exams') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Back to Exams</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Add Rubric Criterion Form -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-dark py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-1"></i> Add Evaluation Criterion</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('admin_exam_rubrics', exam_id=exam.id) }}">
+                    <div class="mb-3">
+                        <label for="criterion_name" class="form-label fw-semibold">Criterion Name</label>
+                        <input type="text" class="form-control" id="criterion_name" name="criterion_name" placeholder="e.g. Code Modularity & PEP8" required>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label for="max_marks" class="form-label fw-semibold">Max Marks</label>
+                            <input type="number" step="0.5" class="form-control" id="max_marks" name="max_marks" placeholder="20" required>
+                        </div>
+                        <div class="col-6">
+                            <label for="weightage" class="form-label fw-semibold">Weightage (%)</label>
+                            <input type="number" step="0.5" class="form-control" id="weightage" name="weightage" value="100" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-semibold">Scoring Guidance / Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Guidance for examiners on how to grade this criterion..."></textarea>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-info fw-bold text-dark">Add Criterion</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rubrics Table -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">Active Criteria List ({{ exam.rubrics|length }})</h5>
+                {% set sum_marks = exam.rubrics|map(attribute='max_marks')|sum %}
+                <span class="badge bg-{{ 'success' if sum_marks == exam.max_marks else 'warning text-dark' }} fs-6">
+                    Total Rubric Marks: {{ sum_marks }} / {{ exam.max_marks }}
+                </span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Criterion</th>
+                            <th>Max Marks</th>
+                            <th>Weightage</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in exam.rubrics %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>
+                                <div class="fw-bold">{{ r.criterion_name }}</div>
+                                <small class="text-muted">{{ r.description or 'No extra notes provided.' }}</small>
+                            </td>
+                            <td><span class="badge bg-primary fs-6">{{ r.max_marks }} pts</span></td>
+                            <td>{{ r.weightage }}%</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('admin_delete_rubric', rubric_id=r.id) }}" onsubmit="return confirm('Remove this rubric criterion?');">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="5" class="text-center text-muted py-4">No evaluation rubrics added yet. Use the form on the left to define rubrics.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

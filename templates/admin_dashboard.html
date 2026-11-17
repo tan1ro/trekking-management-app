@@ -1,137 +1,303 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <title>Admin Dashboard</title>
-</head>
-<body>
-  <h1>Admin Dashboard</h1>
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
 
-  <form method="GET" action="/admin/dashboard">
-    <input type="text" name="search" placeholder="Search by name">
-    <button type="submit">Search</button>
-  </form>
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Administrative Control Center</h2>
+        <p class="text-muted mb-0">Overview of courses, examinations, examiners, slots, and student participation.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('admin_courses') }}" class="btn btn-outline-primary"><i class="bi bi-book-plus me-1"></i> Add Course</a>
+        <a href="{{ url_for('admin_create_exam') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i> Create Exam</a>
+    </div>
+</div>
 
-  {% if search %}
-  <h3>Matching Users</h3>
-  <table border="1" cellpadding="6">
-    <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th></tr>
-    {% for user in user_results %}
-    <tr>
-      <td>{{ user.id }}</td>
-      <td>{{ user.name|capitalize }}</td>
-      <td>{{ user.email }}</td>
-      <td>{{ user.role|capitalize }}</td>
-      <td>{{ user.status|capitalize }}</td>
-    </tr>
-    {% endfor %}
-  </table>
+<!-- 6 Mandatory Metric Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-2">
+        <div class="card stat-card h-100 border-start border-primary border-4">
+            <div class="card-body">
+                <div class="text-muted small fw-semibold text-uppercase">Courses</div>
+                <div class="fs-3 fw-bold text-primary">{{ total_courses }}</div>
+                <a href="{{ url_for('admin_courses') }}" class="small text-decoration-none">Manage &rarr;</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-2">
+        <div class="card stat-card h-100 border-start border-info border-4">
+            <div class="card-body">
+                <div class="text-muted small fw-semibold text-uppercase">Examinations</div>
+                <div class="fs-3 fw-bold text-info">{{ total_exams }}</div>
+                <a href="{{ url_for('admin_exams') }}" class="small text-decoration-none">Manage &rarr;</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-2">
+        <div class="card stat-card h-100 border-start border-warning border-4">
+            <div class="card-body">
+                <div class="text-muted small fw-semibold text-uppercase">Examiners</div>
+                <div class="fs-3 fw-bold text-warning">{{ total_examiners }}</div>
+                {% if pending_examiners_count > 0 %}
+                    <span class="badge bg-danger small">{{ pending_examiners_count }} Pending</span>
+                {% else %}
+                    <a href="{{ url_for('admin_examiners') }}" class="small text-decoration-none">View all &rarr;</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-2">
+        <div class="card stat-card h-100 border-start border-success border-4">
+            <div class="card-body">
+                <div class="text-muted small fw-semibold text-uppercase">Students</div>
+                <div class="fs-3 fw-bold text-success">{{ total_students }}</div>
+                <span class="small text-muted">Registered</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-2">
+        <div class="card stat-card h-100 border-start border-secondary border-4">
+            <div class="card-body">
+                <div class="text-muted small fw-semibold text-uppercase">Total Slots</div>
+                <div class="fs-3 fw-bold text-secondary">{{ total_slots }}</div>
+                <a href="{{ url_for('admin_slots') }}" class="small text-decoration-none">Oversight &rarr;</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-2">
+        <div class="card stat-card h-100 border-start border-dark border-4">
+            <div class="card-body">
+                <div class="text-muted small fw-semibold text-uppercase">Total Bookings</div>
+                <div class="fs-3 fw-bold text-dark">{{ total_bookings }}</div>
+                <a href="{{ url_for('admin_bookings') }}" class="small text-decoration-none">Review &rarr;</a>
+            </div>
+        </div>
+    </div>
+</div>
 
-  <h3>Matching Treks</h3>
-  <table border="1" cellpadding="6">
-    <tr><th>ID</th><th>Name</th><th>Location</th><th>Difficulty</th><th>Status</th></tr>
-    {% for trek in trek_results %}
-    <tr>
-      <td>{{ trek.id }}</td>
-      <td>{{ trek.name }}</td>
-      <td>{{ trek.location }}</td>
-      <td>{{ trek.difficulty }}</td>
-      <td>{{ trek.status|capitalize }}</td>
-    </tr>
-    {% endfor %}
-  </table>
-  <hr>
-  {% endif %}
+<!-- Search Section -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-3">
+        <form method="GET" action="{{ url_for('admin_dashboard') }}" class="row g-2 align-items-center">
+            <div class="col-md-9 col-lg-10">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0" placeholder="Search students, examiners, examinations or booking ID..." value="{{ search }}">
+                </div>
+            </div>
+            <div class="col-md-3 col-lg-2 d-grid">
+                <button type="submit" class="btn btn-dark">Search Portal</button>
+            </div>
+        </form>
+    </div>
+</div>
 
-  <p>Trekkers: {{ total_users }}</p>
-  <p>Staff: {{ total_staff }}</p>
-  <p>Pending staff: {{ pending_staff }}</p>
-  <p>Treks: {{ total_treks }}</p>
-  <p>Bookings: {{ total_bookings }}</p>
-  <form action="/admin/bookings" method="GET">
-    <button type="submit">Open bookings list</button>
-  </form>
-  <hr>
-
-  <h2>Staff Approvals</h2>
-  <table border="1" cellpadding="6">
-    <tr><th>Name</th><th>Email</th><th>Status</th></tr>
-    {% for staff in staff_members %}
-    <tr>
-      <td>{{ staff.name|capitalize }}</td>
-      <td>{{ staff.email }}</td>
-      <td>
-        {% if staff.status == "pending" %}
-          Pending — <a href="/approve_staff/{{ staff.id }}">Approve</a>
+<!-- Search Results (if search keyword present) -->
+{% if search %}
+<div class="card mb-4 border-primary">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-binoculars me-2"></i>Search Results for "{{ search }}"</h5>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-light btn-sm">Clear Search</a>
+    </div>
+    <div class="card-body p-3">
+        {% if not matched_students and not matched_examiners and not matched_exams and not matched_bookings %}
+            <p class="text-muted mb-0">No records found matching your query.</p>
         {% else %}
-          {{ staff.status|capitalize }}
+            {% if matched_exams %}
+                <h6 class="fw-bold text-primary mt-2">Examinations ({{ matched_exams|length }})</h6>
+                <div class="table-responsive mb-3">
+                    <table class="table table-sm table-bordered">
+                        <thead><tr><th>Name</th><th>Course</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            {% for e in matched_exams %}
+                            <tr>
+                                <td>{{ e.name }}</td>
+                                <td>{{ e.course.code }}</td>
+                                <td>{{ e.exam_type }}</td>
+                                <td><span class="badge bg-secondary">{{ e.status }}</span></td>
+                                <td>
+                                    <a href="{{ url_for('admin_exam_rubrics', exam_id=e.id) }}" class="btn btn-outline-info btn-sm py-0">Rubrics</a>
+                                    <a href="{{ url_for('admin_edit_exam', exam_id=e.id) }}" class="btn btn-outline-secondary btn-sm py-0">Edit</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+
+            {% if matched_examiners %}
+                <h6 class="fw-bold text-warning mt-2">Examiners ({{ matched_examiners|length }})</h6>
+                <div class="table-responsive mb-3">
+                    <table class="table table-sm table-bordered">
+                        <thead><tr><th>Name</th><th>Email</th><th>Dept</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody>
+                            {% for ex in matched_examiners %}
+                            <tr>
+                                <td>{{ ex.name }}</td>
+                                <td>{{ ex.email }}</td>
+                                <td>{{ ex.department }}</td>
+                                <td><span class="badge bg-{{ 'success' if ex.status == 'approved' else 'warning' }}">{{ ex.status }}</span></td>
+                                <td><a href="{{ url_for('admin_examiners') }}" class="btn btn-outline-primary btn-sm py-0">Manage</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+
+            {% if matched_students %}
+                <h6 class="fw-bold text-success mt-2">Students ({{ matched_students|length }})</h6>
+                <div class="table-responsive mb-3">
+                    <table class="table table-sm table-bordered">
+                        <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Dept</th><th>Status</th></tr></thead>
+                        <tbody>
+                            {% for st in matched_students %}
+                            <tr>
+                                <td>{{ st.id }}</td>
+                                <td>{{ st.name }}</td>
+                                <td>{{ st.email }}</td>
+                                <td>{{ st.department }}</td>
+                                <td><span class="badge bg-success">{{ st.status }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+
+            {% if matched_bookings %}
+                <h6 class="fw-bold text-dark mt-2">Bookings ({{ matched_bookings|length }})</h6>
+                <div class="table-responsive mb-3">
+                    <table class="table table-sm table-bordered">
+                        <thead><tr><th>Booking ID</th><th>Student</th><th>Exam</th><th>Date & Time</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            {% for b in matched_bookings %}
+                            <tr>
+                                <td>#{{ b.id }}</td>
+                                <td>{{ b.student.name }}</td>
+                                <td>{{ b.slot.examination.name }}</td>
+                                <td>{{ b.slot.date }} @ {{ b.slot.start_time }}</td>
+                                <td><span class="badge bg-info text-dark">{{ b.status }}</span></td>
+                                <td>
+                                    <a href="{{ url_for('admin_reschedule_booking', booking_id=b.id) }}" class="btn btn-outline-warning btn-sm py-0">Reschedule</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
         {% endif %}
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
-  <hr>
+    </div>
+</div>
+{% endif %}
 
-  <h2>Accounts</h2>
-  <table border="1" cellpadding="6">
-    <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr>
-    {% for user in all_users %}
-    <tr>
-      <td>{{ user.id }}</td>
-      <td>{{ user.name|capitalize }}</td>
-      <td>{{ user.email }}</td>
-      <td>{{ user.role|capitalize }}</td>
-      <td>{{ user.status|capitalize }}</td>
-      <td>
-        {% if user.role != "admin" %}
-          {% if user.status == "inactive" %}
-            <a href="/toggle_user/{{ user.id }}">Activate</a>
-          {% else %}
-            <a href="/toggle_user/{{ user.id }}">Deactivate</a>
-          {% endif %}
-        {% endif %}
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
-  <hr>
+<!-- Quick Panels: Examinations & Recent Bookings -->
+<div class="row g-4">
+    <!-- Active Examinations -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-file-earmark-text text-primary me-2"></i>Active Examinations</h5>
+                <a href="{{ url_for('admin_exams') }}" class="btn btn-sm btn-outline-secondary">View All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Exam Name</th>
+                            <th>Course</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for exam in recent_exams %}
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">{{ exam.name }}</div>
+                                <span class="badge bg-light text-dark border">{{ exam.exam_type }}</span>
+                                <small class="text-muted">{{ exam.duration }} mins &bull; {{ exam.max_marks }} pts</small>
+                            </td>
+                            <td><span class="badge bg-secondary">{{ exam.course.code }}</span></td>
+                            <td>
+                                {% if exam.status == 'Booking Open' %}
+                                    <span class="badge bg-success">Booking Open</span>
+                                {% elif exam.status == 'Slot Creation' %}
+                                    <span class="badge bg-primary">Slot Creation</span>
+                                {% elif exam.status == 'Completed' %}
+                                    <span class="badge bg-secondary">Completed</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">{{ exam.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('admin_exam_rubrics', exam_id=exam.id) }}" class="btn btn-outline-info btn-sm" title="Manage Rubrics"><i class="bi bi-ui-checks"></i></a>
+                                <a href="{{ url_for('admin_edit_exam', exam_id=exam.id) }}" class="btn btn-outline-secondary btn-sm" title="Edit Exam"><i class="bi bi-pencil"></i></a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" class="text-center text-muted py-3">No examinations created yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-  <form action="/admin/add_trek" method="GET">
-    <button type="submit">Create trek</button>
-  </form>
-
-  <h2>Trek List</h2>
-  <table border="1" cellpadding="6">
-    <tr>
-      <th>Name</th><th>Location</th><th>Difficulty</th><th>Days</th>
-      <th>Slots</th><th>Status</th><th>Staff</th><th></th>
-    </tr>
-    {% for trek in treks %}
-    <tr>
-      <td>{{ trek.name }}</td>
-      <td>{{ trek.location }}</td>
-      <td>{{ trek.difficulty }}</td>
-      <td>{{ trek.duration }}</td>
-      <td>{{ trek.available_slots }}</td>
-      <td>{{ trek.status|capitalize }}</td>
-      <td>
-        {% if trek.assigned_staff %}
-          {{ trek.assigned_staff.name }}
-        {% else %}
-          Unassigned
-        {% endif %}
-      </td>
-      <td>
-        <a href="/edit_trek/{{ trek.id }}">Edit</a> |
-        <a href="/delete_trek/{{ trek.id }}">Delete</a>
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
-
-  <form action="/logout" method="GET">
-    <button type="submit">Logout</button>
-  </form>
-</body>
-</html>
+    <!-- Recent Bookings -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-journal-check text-success me-2"></i>Recent Bookings</h5>
+                <a href="{{ url_for('admin_bookings') }}" class="btn btn-sm btn-outline-secondary">View All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Exam & Slot</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in recent_bookings %}
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">{{ booking.student.name }}</div>
+                                <small class="text-muted">{{ booking.student.email }}</small>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-truncate" style="max-width: 220px;">{{ booking.slot.examination.name }}</div>
+                                <small class="text-muted">{{ booking.slot.date }} &bull; {{ booking.slot.start_time }}-{{ booking.slot.end_time }}</small>
+                            </td>
+                            <td>
+                                {% if booking.status == 'Booked' %}
+                                    <span class="badge bg-primary">Booked</span>
+                                {% elif booking.status == 'Completed' %}
+                                    <span class="badge bg-success">Completed</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if booking.status == 'Booked' %}
+                                    <a href="{{ url_for('admin_reschedule_booking', booking_id=booking.id) }}" class="btn btn-outline-warning btn-sm">Reschedule</a>
+                                {% elif booking.status == 'Completed' %}
+                                    <a href="{{ url_for('student_scorecard', booking_id=booking.id) }}" class="btn btn-outline-success btn-sm">Scorecard</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" class="text-center text-muted py-3">No bookings recorded yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
