@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Available Slots: {{ exam.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-calendar3-range text-primary me-2"></i>Select Examination Slot</h2>
+        <p class="text-muted mb-0">Examination: <strong>{{ exam.name }}</strong> ({{ exam.course.code }}) &bull; Duration: <strong>{{ exam.duration }} mins</strong></p>
+    </div>
+    <a href="{{ url_for('student_exams') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Back to Exams</a>
+</div>
+
+{% if existing_booking %}
+<div class="alert alert-info shadow-sm mb-4">
+    <div class="d-flex align-items-center">
+        <i class="bi bi-info-circle-fill fs-3 me-3 text-primary"></i>
+        <div>
+            <h5 class="fw-bold mb-1">Active Booking Found</h5>
+            <p class="mb-0">You have already booked a slot for this examination on <strong>{{ existing_booking.slot.date }} at {{ existing_booking.slot.start_time }}-{{ existing_booking.slot.end_time }}</strong> (Examiner: {{ existing_booking.slot.examiner.name }}). Each student may book only one slot per examination.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold">Available Examination Slots ({{ slots|length }})</h5>
+        <span class="badge bg-success fs-6">{{ exam.status }}</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Slot ID</th>
+                    <th>Date</th>
+                    <th>Time Window</th>
+                    <th>Assigned Examiner</th>
+                    <th>Seats Available</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for slot in slots %}
+                <tr>
+                    <td><span class="badge bg-secondary">#{{ slot.id }}</span></td>
+                    <td><span class="fw-bold text-dark">{{ slot.date }}</span></td>
+                    <td>
+                        <div class="fw-semibold">{{ slot.start_time }} - {{ slot.end_time }}</div>
+                        <small class="text-muted">{{ exam.duration }} mins duration</small>
+                    </td>
+                    <td>
+                        <div class="fw-semibold text-primary">{{ slot.examiner.name }}</div>
+                        <small class="text-muted">{{ slot.examiner.department }}</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-{{ 'danger' if slot.available_seats == 0 else 'success' }} fs-6">
+                            {{ slot.available_seats }} / {{ slot.capacity }} Seat(s) Free
+                        </span>
+                    </td>
+                    <td>
+                        {% if slot.available_seats > 0 and slot.status == 'Available' %}
+                            <span class="badge bg-success">Available</span>
+                        {% else %}
+                            <span class="badge bg-danger">Full</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if existing_booking %}
+                            <button class="btn btn-outline-secondary btn-sm" disabled>Already Booked</button>
+                        {% elif slot.available_seats > 0 and slot.status == 'Available' and exam.status == 'Booking Open' %}
+                            <form method="POST" action="{{ url_for('student_book_slot', slot_id=slot.id) }}" onsubmit="return confirm('Confirm booking this slot on {{ slot.date }} at {{ slot.start_time }}?');">
+                                <button type="submit" class="btn btn-success btn-sm fw-bold">
+                                    <i class="bi bi-bookmark-plus me-1"></i> Book Slot
+                                </button>
+                            </form>
+                        {% else %}
+                            <button class="btn btn-outline-danger btn-sm" disabled>No Seats</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center text-muted py-4">No examination slots have been scheduled for this examination yet. Please check back soon.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
