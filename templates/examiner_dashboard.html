@@ -4,127 +4,84 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="fw-bold mb-1"><i class="bi bi-briefcase text-primary me-2"></i>Examiner Portal</h2>
-        <p class="text-muted mb-0">Welcome, <strong>{{ user.name }}</strong> ({{ user.department }}). Manage your examination slots and evaluate candidate submissions.</p>
+        <h2>Examiner Dashboard</h2>
+        <p class="text-muted mb-0">Welcome, {{ user.name }} ({{ user.department }})</p>
     </div>
-    <div>
-        <a href="{{ url_for('examiner_create_slot') }}" class="btn btn-primary"><i class="bi bi-calendar-plus me-1"></i> Create New Slot</a>
-    </div>
+    <a href="{{ url_for('examiner_create_slot') }}" class="btn btn-primary btn-sm">+ Create Examination Slot</a>
 </div>
 
 <!-- Stat Cards -->
 <div class="row g-3 mb-4">
-    <div class="col-sm-6 col-md-3">
-        <div class="card stat-card h-100 border-start border-primary border-4">
-            <div class="card-body">
-                <div class="text-muted small fw-semibold text-uppercase">Created Slots</div>
-                <div class="fs-3 fw-bold text-primary">{{ total_slots }}</div>
-                <span class="small text-muted">Across all examinations</span>
-            </div>
+    <div class="col-md-3">
+        <div class="card text-center p-3">
+            <div class="text-muted small">Created Slots</div>
+            <div class="fs-4 fw-bold">{{ total_slots }}</div>
         </div>
     </div>
-    <div class="col-sm-6 col-md-3">
-        <div class="card stat-card h-100 border-start border-info border-4">
-            <div class="card-body">
-                <div class="text-muted small fw-semibold text-uppercase">Booked Candidates</div>
-                <div class="fs-3 fw-bold text-info">{{ total_students }}</div>
-                <span class="small text-muted">Active bookings</span>
-            </div>
+    <div class="col-md-3">
+        <div class="card text-center p-3">
+            <div class="text-muted small">Booked Students</div>
+            <div class="fs-4 fw-bold">{{ total_students }}</div>
         </div>
     </div>
-    <div class="col-sm-6 col-md-3">
-        <div class="card stat-card h-100 border-start border-warning border-4">
-            <div class="card-body">
-                <div class="text-muted small fw-semibold text-uppercase">Pending Evaluations</div>
-                <div class="fs-3 fw-bold text-warning">{{ pending_evals }}</div>
-                <span class="small text-muted">Awaiting evaluation</span>
-            </div>
+    <div class="col-md-3">
+        <div class="card text-center p-3">
+            <div class="text-muted small">Pending Evaluations</div>
+            <div class="fs-4 fw-bold text-warning">{{ pending_evals }}</div>
         </div>
     </div>
-    <div class="col-sm-6 col-md-3">
-        <div class="card stat-card h-100 border-start border-success border-4">
-            <div class="card-body">
-                <div class="text-muted small fw-semibold text-uppercase">Completed Evaluations</div>
-                <div class="fs-3 fw-bold text-success">{{ completed_evals }}</div>
-                <span class="small text-muted">Marks published</span>
-            </div>
+    <div class="col-md-3">
+        <div class="card text-center p-3">
+            <div class="text-muted small">Completed Evaluations</div>
+            <div class="fs-4 fw-bold text-success">{{ completed_evals }}</div>
         </div>
     </div>
 </div>
 
 <!-- Examiner's Slots Table -->
-<div class="card shadow-sm mb-4">
-    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 fw-bold"><i class="bi bi-calendar-week text-primary me-2"></i>My Scheduled Examination Slots</h5>
-        <a href="{{ url_for('examiner_create_slot') }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus"></i> Add Slot</a>
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>My Scheduled Examination Slots</strong>
+        <a href="{{ url_for('examiner_create_slot') }}" class="btn btn-sm btn-outline-primary">+ Add Slot</a>
     </div>
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead>
-                <tr>
-                    <th>Slot ID</th>
-                    <th>Examination</th>
-                    <th>Date & Time</th>
-                    <th>Capacity / Seats</th>
-                    <th>Booked Candidates</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for slot in slots %}
-                {% set active_bookings = slot.bookings|selectattr('status', 'ne', 'Cancelled')|list %}
-                <tr>
-                    <td><span class="badge bg-secondary">#{{ slot.id }}</span></td>
-                    <td>
-                        <div class="fw-bold">{{ slot.examination.name }}</div>
-                        <small class="text-muted">{{ slot.examination.course.code }} &bull; {{ slot.examination.exam_type }}</small>
-                    </td>
-                    <td>
-                        <div class="fw-semibold">{{ slot.date }}</div>
-                        <small class="text-muted">{{ slot.start_time }} - {{ slot.end_time }}</small>
-                    </td>
-                    <td>
-                        <span class="badge bg-{{ 'danger' if slot.available_seats == 0 else 'success' }}">
-                            {{ slot.available_seats }} / {{ slot.capacity }} Available
-                        </span>
-                    </td>
-                    <td>
-                        <span class="fw-bold text-primary">{{ active_bookings|length }} student(s)</span>
-                    </td>
-                    <td>
-                        {% if slot.status == 'Available' %}
-                            <span class="badge bg-success">Available</span>
-                        {% elif slot.status == 'Full' %}
-                            <span class="badge bg-warning text-dark">Full</span>
-                        {% elif slot.status == 'Completed' %}
-                            <span class="badge bg-secondary">Completed</span>
-                        {% else %}
-                            <span class="badge bg-danger">{{ slot.status }}</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <div class="d-flex gap-1">
-                            <a href="{{ url_for('examiner_slot_students', slot_id=slot.id) }}" class="btn btn-primary btn-sm fw-semibold">
-                                <i class="bi bi-people-fill me-1"></i> Roster & Evaluate
-                            </a>
-
-                            {% if active_bookings|length == 0 %}
-                                <a href="{{ url_for('examiner_edit_slot', slot_id=slot.id) }}" class="btn btn-outline-secondary btn-sm" title="Edit Slot"><i class="bi bi-pencil"></i></a>
-                                <form method="POST" action="{{ url_for('examiner_delete_slot', slot_id=slot.id) }}" onsubmit="return confirm('Remove this examination slot?');">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete Slot"><i class="bi bi-trash"></i></button>
-                                </form>
-                            {% else %}
-                                <button class="btn btn-outline-secondary btn-sm" disabled title="Cannot edit or remove slot with bookings"><i class="bi bi-lock"></i></button>
-                            {% endif %}
-                        </div>
-                    </td>
-                </tr>
-                {% else %}
-                <tr><td colspan="7" class="text-center text-muted py-4">You have not created any examination slots yet. Click "Create New Slot" to schedule slots.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th>Slot ID</th>
+                <th>Examination</th>
+                <th>Date & Time</th>
+                <th>Available Seats</th>
+                <th>Booked Students</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for slot in slots %}
+            {% set active_bookings = slot.bookings|selectattr('status', 'ne', 'Cancelled')|list %}
+            <tr>
+                <td>#{{ slot.id }}</td>
+                <td>{{ slot.examination.name }} ({{ slot.examination.course.code }})</td>
+                <td>{{ slot.date }} ({{ slot.start_time }} - {{ slot.end_time }})</td>
+                <td>{{ slot.available_seats }} / {{ slot.capacity }}</td>
+                <td><strong>{{ active_bookings|length }}</strong></td>
+                <td><span class="badge bg-secondary">{{ slot.status }}</span></td>
+                <td>
+                    <a href="{{ url_for('examiner_slot_students', slot_id=slot.id) }}" class="btn btn-sm btn-primary">
+                        Candidates & Evaluate
+                    </a>
+                    {% if active_bookings|length == 0 %}
+                        <a href="{{ url_for('examiner_edit_slot', slot_id=slot.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                        <form method="POST" action="{{ url_for('examiner_delete_slot', slot_id=slot.id) }}" style="display:inline;" onsubmit="return confirm('Delete slot?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" class="text-center text-muted">No examination slots created yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}

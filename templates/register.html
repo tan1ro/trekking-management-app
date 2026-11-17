@@ -1,23 +1,23 @@
 {% extends "base.html" %}
-{% block title %}Account Registration{% endblock %}
+{% block title %}Register{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center py-4">
-    <div class="col-md-6 col-lg-5">
+    <div class="col-md-5">
         <div class="card shadow-sm">
-            <div class="card-header bg-warning text-dark text-center py-3">
-                <h4 class="mb-0 fw-bold"><i class="bi bi-person-plus-fill me-2"></i>Create New Account</h4>
+            <div class="card-header bg-secondary text-white text-center py-3">
+                <h4 class="mb-0 fw-bold">Register Account</h4>
             </div>
             <div class="card-body p-4">
                 <form method="POST" action="{{ url_for('register') }}">
                     <div class="mb-3">
                         <label for="name" class="form-label fw-semibold">Full Name</label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="e.g. John Doe" required>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="email" class="form-label fw-semibold">Email Address</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="e.g. name@emp.iitm.ac.in" required>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="name@emp.iitm.ac.in" required>
                     </div>
 
                     <div class="mb-3">
@@ -28,27 +28,24 @@
                     <div class="mb-3">
                         <label for="role" class="form-label fw-semibold">Select Role</label>
                         <select class="form-select" id="role" name="role" required>
-                            <option value="" disabled selected>-- Select your role --</option>
-                            <option value="student">Student (Instant access after registration)</option>
-                            <option value="examiner">Examiner (Requires Admin approval before login)</option>
+                            <option value="" disabled selected>-- Select Role --</option>
+                            <option value="student">Student (Direct access)</option>
+                            <option value="examiner">Examiner (Requires Admin approval)</option>
                         </select>
-                        <div class="form-text text-muted">
-                            <i class="bi bi-shield-lock"></i> Note: Administrator accounts cannot be registered publicly.
-                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="department" class="form-label fw-semibold">Department / Specialization</label>
-                        <input type="text" class="form-control" id="department" name="department" placeholder="e.g. Computer Science & Engineering">
+                        <label for="department" class="form-label fw-semibold">Department</label>
+                        <input type="text" class="form-control" id="department" name="department" placeholder="Computer Science">
                     </div>
 
                     <div class="mb-3">
                         <label for="contact" class="form-label fw-semibold">Contact Number</label>
-                        <input type="text" class="form-control" id="contact" name="contact" placeholder="+91 98765 43210">
+                        <input type="text" class="form-control" id="contact" name="contact" placeholder="9876543210">
                     </div>
 
                     <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-warning btn-lg fw-bold text-dark">Register Account</button>
+                        <button type="submit" class="btn btn-primary btn-lg fw-bold">Register</button>
                     </div>
                 </form>
 

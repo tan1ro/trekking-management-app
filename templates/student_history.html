@@ -4,10 +4,10 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="fw-bold mb-1"><i class="bi bi-clock-history text-secondary me-2"></i>My Examination History</h2>
+        <h2 class="fw-bold mb-1">My Examination History</h2>
         <p class="text-muted mb-0">Track all your registered examination slots, active appointments, and published scorecards.</p>
     </div>
-    <a href="{{ url_for('student_dashboard') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+    <a href="{{ url_for('student_dashboard') }}" class="btn btn-outline-secondary">Dashboard</a>
 </div>
 
 <div class="card shadow-sm">
@@ -47,7 +47,7 @@
                         {% if b.status == 'Booked' %}
                             <span class="badge bg-primary fs-6">Booked</span>
                         {% elif b.status == 'Completed' %}
-                            <span class="badge bg-success fs-6"><i class="bi bi-check-circle me-1"></i> Completed</span>
+                            <span class="badge bg-success fs-6">Completed</span>
                         {% else %}
                             <span class="badge bg-danger fs-6">Cancelled</span>
                         {% endif %}
@@ -65,12 +65,12 @@
                         {% if b.status == 'Booked' %}
                             <form method="POST" action="{{ url_for('student_cancel_booking', booking_id=b.id) }}" onsubmit="return confirm('Cancel this examination booking?');">
                                 <button type="submit" class="btn btn-outline-danger btn-sm">
-                                    <i class="bi bi-x-circle me-1"></i> Cancel
+                                    Cancel
                                 </button>
                             </form>
                         {% elif b.status == 'Completed' %}
                             <a href="{{ url_for('student_scorecard', booking_id=b.id) }}" class="btn btn-outline-success btn-sm fw-semibold">
-                                <i class="bi bi-card-checklist me-1"></i> View Scorecard
+                                View Scorecard
                             </a>
                         {% else %}
                             <span class="text-muted small">Slot Released</span>

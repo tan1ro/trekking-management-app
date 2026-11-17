@@ -6,7 +6,7 @@
     <div class="col-md-6">
         <div class="card shadow-sm">
             <div class="card-header bg-dark text-white py-3">
-                <h5 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2"></i>Edit Course: {{ course.code }}</h5>
+                <h5 class="mb-0 fw-bold">Edit Course: {{ course.code }}</h5>
             </div>
             <div class="card-body p-4">
                 <form method="POST" action="{{ url_for('admin_edit_course', course_id=course.id) }}">

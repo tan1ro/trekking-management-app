@@ -4,12 +4,12 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="fw-bold mb-1"><i class="bi bi-file-earmark-text text-primary me-2"></i>Examinations Directory</h2>
+        <h2 class="fw-bold mb-1">Examinations Directory</h2>
         <p class="text-muted mb-0">Configure examination timelines, manage rubrics, and toggle slot creation / student booking windows.</p>
     </div>
     <div class="d-flex gap-2">
-        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
-        <a href="{{ url_for('admin_create_exam') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i> New Examination</a>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">Dashboard</a>
+        <a href="{{ url_for('admin_create_exam') }}" class="btn btn-primary">New Examination</a>
     </div>
 </div>
 
@@ -46,18 +46,18 @@
                     <td><span class="fw-bold">{{ exam.max_marks }}</span> pts</td>
                     <td>
                         <a href="{{ url_for('admin_exam_rubrics', exam_id=exam.id) }}" class="btn btn-outline-info btn-sm">
-                            <i class="bi bi-ui-checks me-1"></i> {{ exam.rubrics|length }} criteria
+                            {{ exam.rubrics|length }} criteria
                         </a>
                     </td>
                     <td>
                         {% if exam.status == 'Booking Open' %}
-                            <span class="badge bg-success fs-6"><i class="bi bi-unlock-fill me-1"></i> Booking Open</span>
+                            <span class="badge bg-success fs-6">Booking Open</span>
                         {% elif exam.status == 'Slot Creation' %}
-                            <span class="badge bg-primary fs-6"><i class="bi bi-calendar-plus me-1"></i> Slot Creation</span>
+                            <span class="badge bg-primary fs-6">Slot Creation</span>
                         {% elif exam.status == 'Completed' %}
-                            <span class="badge bg-secondary fs-6"><i class="bi bi-check-all me-1"></i> Completed</span>
+                            <span class="badge bg-secondary fs-6">Completed</span>
                         {% elif exam.status == 'Closed' %}
-                            <span class="badge bg-danger fs-6"><i class="bi bi-lock-fill me-1"></i> Closed</span>
+                            <span class="badge bg-danger fs-6">Closed</span>
                         {% else %}
                             <span class="badge bg-warning text-dark fs-6">{{ exam.status }}</span>
                         {% endif %}
@@ -73,15 +73,14 @@
                                 <option value="Completed" {% if exam.status == 'Completed' %}selected{% endif %}>Completed</option>
                             </select>
                             <button type="submit" class="btn btn-outline-secondary btn-sm" title="Apply Status Change">
-                                <i class="bi bi-check-lg"></i>
-                            </button>
+                                </button>
                         </form>
                     </td>
                     <td>
                         <div class="d-flex gap-1">
-                            <a href="{{ url_for('admin_edit_exam', exam_id=exam.id) }}" class="btn btn-outline-secondary btn-sm" title="Edit Parameters"><i class="bi bi-pencil"></i></a>
+                            <a href="{{ url_for('admin_edit_exam', exam_id=exam.id) }}" class="btn btn-outline-secondary btn-sm" title="Edit Parameters"></a>
                             <form method="POST" action="{{ url_for('admin_delete_exam', exam_id=exam.id) }}" onsubmit="return confirm('Delete this examination and all its slots, rubrics, and bookings?');">
-                                <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete"><i class="bi bi-trash"></i></button>
+                                <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete"></button>
                             </form>
                         </div>
                     </td>

@@ -6,12 +6,12 @@
     <div class="col-md-7 col-lg-6">
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white py-3">
-                <h5 class="mb-0 fw-bold"><i class="bi bi-calendar-plus me-2"></i>{{ 'Edit Examination Slot' if slot else 'Schedule New Examination Slot' }}</h5>
+                <h5 class="mb-0 fw-bold">{{ 'Edit Examination Slot' if slot else 'Schedule New Examination Slot' }}</h5>
             </div>
             <div class="card-body p-4">
                 {% if not exams and not slot %}
                     <div class="alert alert-warning mb-0">
-                        <i class="bi bi-exclamation-circle-fill me-1"></i> There are currently no examinations open for slot creation. Please check back when an administrator opens the slot creation window.
+                        There are currently no examinations open for slot creation. Please check back when an administrator opens the slot creation window.
                     </div>
                     <div class="mt-3 text-center">
                         <a href="{{ url_for('examiner_dashboard') }}" class="btn btn-outline-secondary">Return to Dashboard</a>

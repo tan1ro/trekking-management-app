@@ -4,10 +4,10 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="fw-bold mb-1"><i class="bi bi-person-check text-warning me-2"></i>Examiners Directory</h2>
+        <h2 class="fw-bold mb-1">Examiners Directory</h2>
         <p class="text-muted mb-0">Review examiner registrations, grant dashboard access permissions, or toggle account status.</p>
     </div>
-    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">Dashboard</a>
 </div>
 
 <div class="card shadow-sm">
@@ -42,11 +42,11 @@
                     </td>
                     <td>
                         {% if ex.status == 'approved' %}
-                            <span class="badge bg-success fs-6"><i class="bi bi-check-circle me-1"></i> Approved</span>
+                            <span class="badge bg-success fs-6">Approved</span>
                         {% elif ex.status == 'pending' %}
-                            <span class="badge bg-warning text-dark fs-6"><i class="bi bi-clock-history me-1"></i> Pending Approval</span>
+                            <span class="badge bg-warning text-dark fs-6">Pending Approval</span>
                         {% else %}
-                            <span class="badge bg-danger fs-6"><i class="bi bi-slash-circle me-1"></i> Inactive</span>
+                            <span class="badge bg-danger fs-6">Inactive</span>
                         {% endif %}
                     </td>
                     <td>
@@ -54,7 +54,7 @@
                             {% if ex.status == 'pending' %}
                                 <form method="POST" action="{{ url_for('admin_approve_examiner', user_id=ex.id) }}">
                                     <button type="submit" class="btn btn-success btn-sm fw-bold">
-                                        <i class="bi bi-check2"></i> Approve Access
+                                        Approve Access
                                     </button>
                                 </form>
                             {% endif %}
@@ -62,11 +62,11 @@
                             <form method="POST" action="{{ url_for('admin_toggle_examiner', user_id=ex.id) }}">
                                 {% if ex.status == 'approved' %}
                                     <button type="submit" class="btn btn-outline-danger btn-sm" title="Deactivate Account">
-                                        <i class="bi bi-person-x"></i> Deactivate
+                                        Deactivate
                                     </button>
                                 {% elif ex.status == 'inactive' %}
                                     <button type="submit" class="btn btn-outline-success btn-sm" title="Reactivate Account">
-                                        <i class="bi bi-person-check"></i> Activate
+                                        Activate
                                     </button>
                                 {% endif %}
                             </form>

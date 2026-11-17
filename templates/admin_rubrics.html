@@ -4,11 +4,11 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="fw-bold mb-1"><i class="bi bi-ui-checks text-info me-2"></i>Evaluation Rubrics</h2>
+        <h2 class="fw-bold mb-1">Evaluation Rubrics</h2>
         <p class="text-muted mb-0">Examination: <strong>{{ exam.name }}</strong> ({{ exam.course.code }}) &bull; Maximum Total Marks: <strong>{{ exam.max_marks }} pts</strong></p>
     </div>
     <div class="d-flex gap-2">
-        <a href="{{ url_for('admin_exams') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Back to Exams</a>
+        <a href="{{ url_for('admin_exams') }}" class="btn btn-outline-secondary">Back to Exams</a>
     </div>
 </div>
 
@@ -17,7 +17,7 @@
     <div class="col-lg-4">
         <div class="card shadow-sm">
             <div class="card-header bg-info text-dark py-3">
-                <h5 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-1"></i> Add Evaluation Criterion</h5>
+                <h5 class="mb-0 fw-bold">Add Evaluation Criterion</h5>
             </div>
             <div class="card-body p-4">
                 <form method="POST" action="{{ url_for('admin_exam_rubrics', exam_id=exam.id) }}">
@@ -83,7 +83,7 @@
                             <td>{{ r.weightage }}%</td>
                             <td>
                                 <form method="POST" action="{{ url_for('admin_delete_rubric', rubric_id=r.id) }}" onsubmit="return confirm('Remove this rubric criterion?');">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></button>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm"></button>
                                 </form>
                             </td>
                         </tr>
