@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}My Examination History{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-clock-history text-secondary me-2"></i>My Examination History</h2>
+        <p class="text-muted mb-0">Track all your registered examination slots, active appointments, and published scorecards.</p>
+    </div>
+    <a href="{{ url_for('student_dashboard') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Dashboard</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold">All Bookings ({{ bookings|length }})</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Examination</th>
+                    <th>Date & Time</th>
+                    <th>Examiner</th>
+                    <th>Status</th>
+                    <th>Result / Score</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in bookings %}
+                <tr>
+                    <td><span class="badge bg-secondary">#{{ b.id }}</span></td>
+                    <td>
+                        <div class="fw-bold text-dark">{{ b.slot.examination.name }}</div>
+                        <small class="text-muted">{{ b.slot.examination.course.code }} &bull; {{ b.slot.examination.exam_type }}</small>
+                    </td>
+                    <td>
+                        <div class="fw-semibold">{{ b.slot.date }}</div>
+                        <small class="text-muted">{{ b.slot.start_time }} - {{ b.slot.end_time }}</small>
+                    </td>
+                    <td>
+                        <div class="fw-semibold text-primary">{{ b.slot.examiner.name }}</div>
+                        <small class="text-muted">{{ b.slot.examiner.department }}</small>
+                    </td>
+                    <td>
+                        {% if b.status == 'Booked' %}
+                            <span class="badge bg-primary fs-6">Booked</span>
+                        {% elif b.status == 'Completed' %}
+                            <span class="badge bg-success fs-6"><i class="bi bi-check-circle me-1"></i> Completed</span>
+                        {% else %}
+                            <span class="badge bg-danger fs-6">Cancelled</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if b.status == 'Completed' and b.total_score is not none %}
+                            <span class="fw-bold text-success fs-6">{{ b.total_score }} / {{ b.slot.examination.max_marks }} pts</span>
+                        {% elif b.status == 'Booked' %}
+                            <span class="text-muted small">Pending Viva</span>
+                        {% else %}
+                            <span class="text-muted small">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if b.status == 'Booked' %}
+                            <form method="POST" action="{{ url_for('student_cancel_booking', booking_id=b.id) }}" onsubmit="return confirm('Cancel this examination booking?');">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-x-circle me-1"></i> Cancel
+                                </button>
+                            </form>
+                        {% elif b.status == 'Completed' %}
+                            <a href="{{ url_for('student_scorecard', booking_id=b.id) }}" class="btn btn-outline-success btn-sm fw-semibold">
+                                <i class="bi bi-card-checklist me-1"></i> View Scorecard
+                            </a>
+                        {% else %}
+                            <span class="text-muted small">Slot Released</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center text-muted py-4">No examination bookings recorded yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
